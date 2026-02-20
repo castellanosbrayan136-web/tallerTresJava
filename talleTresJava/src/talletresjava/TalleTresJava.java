@@ -4,7 +4,7 @@
  */
 package talletresjava;
 import javax.swing.JOptionPane;
-
+import java.text.Normalizer;
 
 /**
  *
@@ -59,6 +59,19 @@ public class TalleTresJava {
             }
         }
     }
+    
+
+
+    public static String limpiarTexto(String texto) {
+        // 1. Pasar todo a minúsculas
+        texto = texto.toLowerCase();
+
+        // 2. Quitar tildes
+        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        texto = texto.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+
+        return texto;
+}
         
     public static void ejercicio1() {
         String dialogoMenu;
@@ -237,15 +250,16 @@ public class TalleTresJava {
         }
     }
     public static void ejercicio3() {
-        String[] estudiantes = new String[10];
+        int cupos = 4;
+        String[] estudiantes = new String[cupos];
         
-        double[] matematicas = new double[10];
+        double[] matematicas = new double[cupos];
         
-        double[] ingles = new double[10];
+        double[] ingles = new double[cupos];
         
-        double[] español = new double[10];
+        double[] español = new double[cupos];
         
-        int contador = -1;
+        int contador = 0;
         
         String menuOptions;
         menuOptions = """
@@ -274,30 +288,141 @@ public class TalleTresJava {
                 } else {
                     switch (menuOption) {
                         case 1 -> {
-                            String name = JOptionPane.showInputDialog(null,"Nombre del estudiante: ");
-                            estudiantes[contador] = name;
+                            if (contador >= estudiantes.length) {
+                                JOptionPane.showMessageDialog(null,"¡Lista llena!");
+                                break;
+                            }
                             
-                            String inputNotaMate = JOptionPane.showInputDialog(null,"Nota Matematicas: ");
-                            double notaMate = Double.parseDouble(inputNotaMate);
-                            matematicas[contador] = notaMate;
-                            
-                            String inputNotaIngles = JOptionPane.showInputDialog(null,"Nota Ingles ");
-                            double notaIngles = Double.parseDouble(inputNotaIngles);
-                            ingles[contador] = notaIngles;
-                            
-                            String inputNotaEspañol = JOptionPane.showInputDialog(null,"Nota Español: ");
-                            double notaEspañol = Double.parseDouble(inputNotaEspañol);
-                            español[contador] = notaEspañol;
-                            
-                            contador += 1;
+                            try{
+                                String name = JOptionPane.showInputDialog(
+                                        null,
+                                        "Nombre del estudiante: ");
+                                estudiantes[contador] = name;
+
+                                String inputNotaMate = JOptionPane.showInputDialog(
+                                        null,
+                                        "Nota Matematicas: ");
+                                double notaMate = Double.parseDouble(inputNotaMate);
+                                matematicas[contador] = notaMate;
+
+                                String inputNotaIngles = JOptionPane.showInputDialog(
+                                        null,
+                                        "Nota Ingles ");
+                                double notaIngles = Double.parseDouble(inputNotaIngles);
+                                ingles[contador] = notaIngles;
+
+                                String inputNotaEspañol = JOptionPane.showInputDialog(
+                                        null,
+                                        "Nota Español: ");
+                                double notaEspañol = Double.parseDouble(inputNotaEspañol);
+                                español[contador] = notaEspañol;
+
+                                contador ++;
+                                
+                            }catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(
+                                        null,
+                                        "Ingresa números validos!");
+                            }
+
                         }
                         case 2 -> {
-                            System.out.println(matematicas[1]);
-                            System.out.println(ingles);
-                            System.out.println(español);
-                            System.out.println(estudiantes);
+                            String inputMateria = JOptionPane.showInputDialog(
+                                    null,
+                                    "Materia a calcular: ");
+                            
+                            float sumaNotas = 0;
+                            
+                            String materia = limpiarTexto(inputMateria);
+                            
+                        switch (materia) {
+                            case "espanol" -> {
+                                for (double n : español) sumaNotas += n;
+                                materia = "Español";
+                            }
+                            case "ingles" -> {
+                                for (double n : ingles) sumaNotas += n;
+                                materia = "Inglés";
+                            }
+                            case "matematicas" -> {
+                                for (double n : matematicas) sumaNotas += n;
+                                materia = "Matemáticas";
+                            }
+                            default -> {
+                                JOptionPane.showMessageDialog(null,"Materia no existente");
+                            }
+                        }
+                        
+                        int numeroNotas = estudiantes.length;
+                        
+                        double promedio = sumaNotas/numeroNotas;
+                        
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "El prmedio de " + materia + " en el curso fue de: " + promedio);
+                        }
+                    case 3 -> {
+                        float sumaEspañol = 0;
+                        float sumaIngles = 0;
+                        float sumaMate = 0;
+                        
+                        for (double n : español) sumaEspañol += n;
+                        for (double n : ingles) sumaIngles += n;
+                        for (double n : matematicas) sumaMate += n;
+                        
+                        float sumaTotalCurso = sumaEspañol + sumaIngles + sumaMate;
+                        
+                        int numeroNotas = estudiantes.length * 3;
+                        
+                        float promedioCurso = sumaTotalCurso/numeroNotas;
+                        
+                        JOptionPane.showMessageDialog(null,"Promedio total del curso: " + promedioCurso);
+                        
+                    }
+                    case 4 -> {
+                        String aprobados[] = new String[cupos];
+                        String reprobados[] = new String[cupos];
+                        
+                        double promedioAprobados[] = new double[cupos];
+                        double promedioReprobados[] = new double[cupos];
+                        
+                        for (int i = 0; i <= (cupos - 1); i++) {
+                            double promedioEstudiante = (español[i] + ingles[i] + matematicas[i])/3;
+                            String nombre = estudiantes[i];
+                            
+                            if (promedioEstudiante >= 3.0) {
+                                aprobados[i] = nombre;
+                                promedioAprobados[i] = promedioEstudiante;
+                            } else {
+                                reprobados[i] = nombre;
+                                promedioReprobados[i] = promedioEstudiante;
+                            }
+                        }
+                        for (int n = 0; n <= (aprobados.length-1); n++) {
+                            if (n == 0) {
+                                System.out.println("Estudiantes aprobados: ");
+                            }
+                            if (aprobados[n] == null) {
+                                
+                            } else {
+                                System.out.println(aprobados[n] + " : " + promedioAprobados[n]);
+                            }
+                        }
+                        
+                        for (int c = 0; c <= (reprobados.length-1); c++) {
+                            if (c == 0) {
+                                System.out.println("\nEstudiantes reprobados: ");
+                            }
+                            if (reprobados[c] == null) {
+                                
+                            } else {
+                                System.out.println(reprobados[c] + " : " + promedioReprobados[c]);
+                            }
                         }
                     }
+                    
+                    
+                }
                 }
                 
             } catch (NumberFormatException e) {
