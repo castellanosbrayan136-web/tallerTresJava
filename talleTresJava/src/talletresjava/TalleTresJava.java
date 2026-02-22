@@ -25,7 +25,7 @@ public class TalleTresJava {
                       1. Menú de salida, despedida y salir
                       2. Calculo de áreas
                       3. Sistema de estudiantes
-                      4.
+                      4. Lista hombres y mujeres
                       0. Exit""";
         
         //Ciclo While para repetir el menu hasta que la opcion sea correcta o salir
@@ -48,6 +48,7 @@ public class TalleTresJava {
                     case 1 -> ejercicio1();
                     case 2 -> ejercicio2();
                     case 3 -> ejercicio3();
+                    case 4 -> ejercicio4();
                     case 0 -> {
                         JOptionPane.showMessageDialog(null, "Programa finalizado");
                         return;
@@ -250,7 +251,10 @@ public class TalleTresJava {
         }
     }
     public static void ejercicio3() {
-        int cupos = 4;
+        int cupos = 10;
+        
+        int cuposRestantes = cupos;
+        
         String[] estudiantes = new String[cupos];
         
         double[] matematicas = new double[cupos];
@@ -261,16 +265,18 @@ public class TalleTresJava {
         
         int contador = 0;
         
-        String menuOptions;
-        menuOptions = """
-                      1. Registrar notas
+        while (true) {
+            try {
+                String menuOptions;
+                menuOptions = "1. Registrar notas (Quedan "
+                      + cuposRestantes + 
+                      """
+                       cupos)
                       2. Calcular promedio por materia
                       3. Calcular promedio total del curso
                       4. Mostrar aprobados y reprobados
                       5. Exit""";
-        
-        while (true) {
-            try {
+                
                 String inputMenuOption = JOptionPane.showInputDialog(
                         null,
                         menuOptions);
@@ -318,6 +324,7 @@ public class TalleTresJava {
                                 español[contador] = notaEspañol;
 
                                 contador ++;
+                                cuposRestantes --;
                                 
                             }catch (NumberFormatException e) {
                                 JOptionPane.showMessageDialog(
@@ -327,6 +334,12 @@ public class TalleTresJava {
 
                         }
                         case 2 -> {
+                            if (cupos != cuposRestantes) {
+                                JOptionPane.showMessageDialog(
+                                        null,
+                                        "Quedan " + cuposRestantes + " por llenar!");
+                                continue;
+                            }
                             String inputMateria = JOptionPane.showInputDialog(
                                     null,
                                     "Materia a calcular: ");
@@ -350,6 +363,7 @@ public class TalleTresJava {
                             }
                             default -> {
                                 JOptionPane.showMessageDialog(null,"Materia no existente");
+                                continue;
                             }
                         }
                         
@@ -362,6 +376,13 @@ public class TalleTresJava {
                                 "El prmedio de " + materia + " en el curso fue de: " + promedio);
                         }
                     case 3 -> {
+                        if (cupos != cuposRestantes) {
+                                JOptionPane.showMessageDialog(
+                                        null,
+                                        "Quedan " + cuposRestantes + " por llenar!");
+                                continue;
+                            }
+                        
                         float sumaEspañol = 0;
                         float sumaIngles = 0;
                         float sumaMate = 0;
@@ -376,10 +397,19 @@ public class TalleTresJava {
                         
                         float promedioCurso = sumaTotalCurso/numeroNotas;
                         
-                        JOptionPane.showMessageDialog(null,"Promedio total del curso: " + promedioCurso);
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Promedio total del curso: " + promedioCurso);
                         
                     }
                     case 4 -> {
+                        if (cupos != cuposRestantes) {
+                                JOptionPane.showMessageDialog(
+                                        null,
+                                        "Quedan " + cuposRestantes + " por llenar!");
+                                continue;
+                            }
+                        
                         String aprobados[] = new String[cupos];
                         String reprobados[] = new String[cupos];
                         
@@ -420,19 +450,110 @@ public class TalleTresJava {
                             }
                         }
                     }
-                    
-                    
+                    case 5 -> {
+                        return;
+                    }
                 }
                 }
                 
-            } catch (NumberFormatException e) {
-                
+            } catch (NumberFormatException e) {   
             }
         }
+    }
+    public static void ejercicio4() {
+        int amountNames = 4;
         
+        String names[] = new String[amountNames];
         
+        char sexos[] = new char[amountNames];
         
+        String hombres[] = new String[amountNames];
         
+        String mujeres[] = new String[amountNames];
+        
+        char sexo = 'n';
+        
+        int contadorPersonas = 0;
+        
+        int contadorHombres = 0;
+        
+        int contadorMujeres = 0;
+        
+        while (true) {
+            try {
+                String inputMenu = JOptionPane.showInputDialog(null,"1. Agregar persona\n2.Ver lista de hombres y mujeres\n3.Salir");
+                
+                if (inputMenu == null) {
+                    return;
+                }
+                
+                int menu = Integer.parseInt(inputMenu);
+                
+                switch (menu) {
+                    case 1 -> {
+                        String name = JOptionPane.showInputDialog(null,"Nombre del usuario: ");
+                        String inputSexo = JOptionPane.showInputDialog(null,"Sexo: \nm para masculino\nf para femenino");
+
+                        if (name == null || inputSexo == null) {
+                            return;
+                        }
+                        
+                        if (contadorPersonas == amountNames) {
+                            JOptionPane.showMessageDialog(null,"Lista de personas llena!");
+                            continue;
+                        }
+
+                        sexo = inputSexo.charAt(0);
+
+                        switch (sexo) {
+                            case 'm' -> contadorHombres ++;
+                            case 'f' -> contadorMujeres ++;
+                            default -> {
+                                JOptionPane.showMessageDialog(null,"Digite una opción correcta (m o f)!");
+                                continue;
+                            }
+                        }
+                        
+                        names[contadorPersonas] = name;
+                        sexos[contadorPersonas] = sexo;
+
+                        contadorPersonas ++;
+                    }
+                    case 2 -> {
+                        String listaH = "Lista de hombres:";
+                        String listaM = "\nLista de Mujeres:";
+                        
+                        int m = 0;
+                        int f = 0;
+
+                        for (int i = 0; i <= (contadorPersonas - 1) ; i++) {
+                            if (sexos[i] == 'm') {
+                                hombres[m] = names[i];
+                                m++;
+                            } else {
+                                mujeres[f] = names[i];
+                                f++;
+                            }
+                        }
+
+                        for (int t = 0; t <= (contadorHombres - 1) ; t++) {
+                            listaH += "\n" + t + ". " + hombres[t];
+                        }
+
+                        for (int n = 0; n <= (contadorMujeres - 1) ; n++) {
+                            listaM += "\n" + n + ". " + mujeres[n]; 
+                        }
+
+                        JOptionPane.showMessageDialog(null,listaH + listaM);
+                    }
+                    case 3 -> {
+                        return;
+                    }
+                }
+            } catch (NumberFormatException e) {
+
+            }
+        }
         
     }
 }
